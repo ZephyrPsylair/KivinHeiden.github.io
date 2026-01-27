@@ -108,6 +108,44 @@ body::after {
     transform: translate(-50%, -50%);
 }
 
+/* Image Loading Optimization */
+img, video {
+    /* Smooth transition when images load */
+    opacity: 0;
+    animation: fadeInImage 0.3s ease-in forwards;
+    /* Performance optimization */
+    will-change: opacity;
+}
+
+@keyframes fadeInImage {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Loading placeholder for images */
+img[loading="lazy"] {
+    background: linear-gradient(110deg, 
+        rgba(30, 41, 59, 0.5) 8%, 
+        rgba(56, 189, 248, 0.1) 18%, 
+        rgba(30, 41, 59, 0.5) 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    to {
+        background-position: -200% 0;
+    }
+}
+
+/* Optimize animations with will-change */
+.project-card,
+.modal-image,
+.card-glow {
+    will-change: transform, opacity;
+}
+
 /* Particle Canvas */
 #particles {
     position: fixed;
@@ -117,6 +155,7 @@ body::after {
     height: 100%;
     z-index: -1;
     opacity: 0.6;
+    will-change: contents;
 }
 
 /* Navigation - The Map */
@@ -909,14 +948,35 @@ section {
     background-position: center;
     background-repeat: no-repeat;
     box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45), 0 10px 30px rgba(56, 189, 248, 0.1);
+    /* Lazy loading placeholder */
+    background-color: rgba(30, 41, 59, 0.5);
+    position: relative;
+    overflow: hidden;
 }
 
-.preview-escape { background-image: url('images/portfolio/escape.jpg'); }
-.preview-tower { background-image: url('images/portfolio/tower.png'); }
-.preview-zenith { background-image: url('images/portfolio/zenith.jpg'); }
-.preview-rogue { background-image: url('images/portfolio/rogue.jpg'); }
-.preview-santa { background-image: url('images/portfolio/santa.png'); }
-.preview-monster { background-image: url('images/portfolio/monster.jpg'); }
+/* Lazy loading shimmer effect before image loads */
+.project-preview:not(.bg-loaded)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(110deg, 
+        rgba(30, 41, 59, 0.5) 8%, 
+        rgba(56, 189, 248, 0.1) 18%, 
+        rgba(30, 41, 59, 0.5) 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Only load background images when visible */
+.preview-escape.bg-loaded { background-image: url('images/portfolio/escape.jpg'); }
+.preview-tower.bg-loaded { background-image: url('images/portfolio/tower.png'); }
+.preview-zenith.bg-loaded { background-image: url('images/portfolio/zenith.jpg'); }
+.preview-rogue.bg-loaded { background-image: url('images/portfolio/rogue.jpg'); }
+.preview-santa.bg-loaded { background-image: url('images/portfolio/santa.png'); }
+.preview-monster.bg-loaded { background-image: url('images/portfolio/monster.jpg'); }
 
 .project-title {
     font-family: var(--font-heading);

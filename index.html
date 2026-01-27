@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;600&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Preload critical images -->
+    <link rel="preload" as="image" href="images/profile-pic.jpg" />
 </head>
 <body>  
     <!-- Particle Canvas Background -->
@@ -89,7 +91,7 @@
                 <article class="journal-panel left-panel">
                     <div class="profile-frame">
                         <div class="profile-image">
-                            <img src="images/profile-pic.jpg" alt="Portrait of Kivin Heiden">
+                            <img src="images/profile-pic.jpg" alt="Portrait of Kivin Heiden" width="400" height="400" fetchpriority="high">
                         </div>
                         <div class="frame-ornament"></div>
                     </div>
