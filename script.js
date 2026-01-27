@@ -218,6 +218,9 @@ let modalSlides = [];
 let modalDots = [];
 let currentSlide = 0;
 
+// Video cache for preloading
+const videoCache = new Map();
+
 function buildModalSlides(images, title, link) {
     modalSlides = [];
     modalDots = [];
@@ -239,17 +242,25 @@ function buildModalSlides(images, title, link) {
         const videoSlide = document.createElement('div');
         videoSlide.className = 'modal-image';
 
-        const video = document.createElement('video');
-        video.src = link;
-        // do not autoplay immediately; we'll play after thumbnail fades
-        video.autoplay = false;
-        video.muted = false; // unmute to allow audio playback
-        video.loop = true;
-        video.playsInline = true;
+        // Check if video is already cached
+        let video;
+        if (videoCache.has(link)) {
+            video = videoCache.get(link);
+        } else {
+            video = document.createElement('video');
+            video.src = link;
+            video.preload = 'auto'; // Preload the entire video
+            video.autoplay = false;
+            video.muted = false;
+            video.loop = true;
+            video.playsInline = true;
+            video.setAttribute('aria-label', title || 'Project video');
+            videoCache.set(link, video);
+        }
+        
         video.style.width = '100%';
         video.style.height = '100%';
         video.style.objectFit = 'cover';
-        video.setAttribute('aria-label', title || 'Project video');
 
         // append video first (thumb will sit above it)
         videoSlide.appendChild(video);
@@ -462,6 +473,45 @@ document.addEventListener('keydown', (e) => {
         nextSlide(-1);
     }
 });
+
+// ============= VIDEO PRELOADING =============
+// Preload project videos when page loads for instant smooth opening
+function preloadProjectVideos() {
+    // Get all project buttons
+    const projectButtons = document.querySelectorAll('.view-project');
+    
+    // Preload the first 3 project videos (or all if less than 3)
+    const videosToPreload = Math.min(3, projectButtons.length);
+    
+    projectButtons.forEach((button, index) => {
+        if (index < videosToPreload) {
+            const link = button.getAttribute('data-link');
+            if (link && link.trim().toLowerCase().endsWith('.mp4')) {
+                // Create and cache the video element
+                if (!videoCache.has(link)) {
+                    const video = document.createElement('video');
+                    video.src = link;
+                    video.preload = 'auto'; // Preload entire video
+                    video.muted = true; // Mute during preload to avoid issues
+                    video.loop = true;
+                    video.playsInline = true;
+                    
+                    // Add to cache
+                    videoCache.set(link, video);
+                    
+                    console.log(`Preloading video ${index + 1}:`, link);
+                }
+            }
+        }
+    });
+}
+
+// Call preload function after page loads
+window.addEventListener('load', () => {
+    // Small delay to let page finish loading first
+    setTimeout(preloadProjectVideos, 500);
+});
+
 
 // ============= FORM HANDLING =============
 const dreamForm = document.querySelector('.dream-form');
