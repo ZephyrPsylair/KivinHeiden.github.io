@@ -474,17 +474,18 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ============= VIDEO PRELOADING =============
-// Preload project videos when page loads for instant smooth opening
-function preloadProjectVideos() {
+// ============= VIDEO & IMAGE PRELOADING =============
+// Preload project videos and images when page loads for instant smooth opening
+function preloadProjectMedia() {
     // Get all project buttons
     const projectButtons = document.querySelectorAll('.view-project');
     
-    // Preload the first 3 project videos (or all if less than 3)
-    const videosToPreload = Math.min(3, projectButtons.length);
+    // Preload the first 3 projects (or all if less than 3)
+    const projectsToPreload = Math.min(3, projectButtons.length);
     
     projectButtons.forEach((button, index) => {
-        if (index < videosToPreload) {
+        if (index < projectsToPreload) {
+            // Preload videos
             const link = button.getAttribute('data-link');
             if (link && link.trim().toLowerCase().endsWith('.mp4')) {
                 // Create and cache the video element
@@ -502,6 +503,19 @@ function preloadProjectVideos() {
                     console.log(`Preloading video ${index + 1}:`, link);
                 }
             }
+            
+            // Preload images
+            const images = button.getAttribute('data-images');
+            if (images) {
+                const imageSources = images.split(',').map(s => s.trim()).filter(Boolean);
+                
+                // Preload all images for this project
+                imageSources.forEach((src, imgIndex) => {
+                    const img = new Image();
+                    img.src = src;
+                    console.log(`Preloading project ${index + 1} image ${imgIndex + 1}:`, src);
+                });
+            }
         }
     });
 }
@@ -509,7 +523,7 @@ function preloadProjectVideos() {
 // Call preload function after page loads
 window.addEventListener('load', () => {
     // Small delay to let page finish loading first
-    setTimeout(preloadProjectVideos, 500);
+    setTimeout(preloadProjectMedia, 500);
 });
 
 
