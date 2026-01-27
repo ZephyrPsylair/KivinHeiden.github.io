@@ -88,10 +88,8 @@ class Particle {
     }
 }
 
-// Create particles (adjust count based on device performance)
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const isLowPerformance = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
-const particleCount = isMobile ? 40 : (isLowPerformance ? 60 : 80);
+// Create particles
+const particleCount = 80;
 const particles = [];
 
 for (let i = 0; i < particleCount; i++) {
@@ -147,25 +145,6 @@ const observer = new IntersectionObserver((entries) => {
 // Observe elements
 document.querySelectorAll('.journal-entry, .project-card, .timeline-item').forEach(el => {
     observer.observe(el);
-});
-
-// ============= LAZY LOAD BACKGROUND IMAGES =============
-const lazyBackgroundObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const element = entry.target;
-            // Add loaded class to trigger CSS background
-            element.classList.add('bg-loaded');
-            lazyBackgroundObserver.unobserve(element);
-        }
-    });
-}, {
-    rootMargin: '50px' // Start loading 50px before entering viewport
-});
-
-// Observe all project preview elements for lazy loading
-document.querySelectorAll('.project-preview').forEach(preview => {
-    lazyBackgroundObserver.observe(preview);
 });
 
 // ============= NAVIGATION HIGHLIGHT =============
@@ -270,12 +249,11 @@ function buildModalSlides(images, title, link) {
         } else {
             video = document.createElement('video');
             video.src = link;
-            video.preload = 'metadata'; // Only preload metadata, not the entire video
+            video.preload = 'auto'; // Preload the entire video
             video.autoplay = false;
             video.muted = false;
             video.loop = true;
             video.playsInline = true;
-            video.loading = 'lazy'; // Lazy load video
             video.setAttribute('aria-label', title || 'Project video');
             videoCache.set(link, video);
         }
@@ -294,7 +272,6 @@ function buildModalSlides(images, title, link) {
             thumb.className = 'video-thumb';
             thumb.src = sources[0];
             thumb.alt = title ? `${title} thumbnail` : 'Video thumbnail';
-            thumb.loading = 'lazy'; // Add lazy loading to thumbnail
             // start fully visible; set to fade via CSS and JS
             thumb.style.opacity = '1';
             videoSlide.appendChild(thumb);
@@ -498,13 +475,13 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ============= VIDEO & IMAGE PRELOADING =============
-// Preload first project's media for instant smooth opening
+// Preload project videos and images when page loads for instant smooth opening
 function preloadProjectMedia() {
     // Get all project buttons
     const projectButtons = document.querySelectorAll('.view-project');
     
-    // Only preload the first project to avoid excessive initial loading
-    const projectsToPreload = Math.min(1, projectButtons.length);
+    // Preload the first 3 projects (or all if less than 3)
+    const projectsToPreload = Math.min(3, projectButtons.length);
     
     projectButtons.forEach((button, index) => {
         if (index < projectsToPreload) {
@@ -515,25 +492,28 @@ function preloadProjectMedia() {
                 if (!videoCache.has(link)) {
                     const video = document.createElement('video');
                     video.src = link;
-                    video.preload = 'metadata'; // Only preload metadata, not full video
+                    video.preload = 'auto'; // Preload entire video
                     video.muted = true; // Mute during preload to avoid issues
                     video.loop = true;
                     video.playsInline = true;
                     
                     // Add to cache
                     videoCache.set(link, video);
+                    
+                    console.log(`Preloading video ${index + 1}:`, link);
                 }
             }
             
-            // Preload only first 2 images for this project
+            // Preload images
             const images = button.getAttribute('data-images');
             if (images) {
                 const imageSources = images.split(',').map(s => s.trim()).filter(Boolean);
                 
-                // Preload only first 2 images
-                imageSources.slice(0, 2).forEach((src, imgIndex) => {
+                // Preload all images for this project
+                imageSources.forEach((src, imgIndex) => {
                     const img = new Image();
                     img.src = src;
+                    console.log(`Preloading project ${index + 1} image ${imgIndex + 1}:`, src);
                 });
             }
         }
@@ -546,49 +526,6 @@ window.addEventListener('load', () => {
     setTimeout(preloadProjectMedia, 500);
 });
 
-// ============= HOVER PRELOAD FOR PROJECTS =============
-// Preload project media when user hovers over a project card for better perceived performance
-const imagePreloadCache = new Set();
-
-document.querySelectorAll('.project-card').forEach(card => {
-    const button = card.querySelector('.view-project');
-    if (!button) return;
-    
-    let hoverTimeout;
-    
-    card.addEventListener('mouseenter', () => {
-        // Delay preload by 300ms to avoid preloading on quick hovers
-        hoverTimeout = setTimeout(() => {
-            const link = button.getAttribute('data-link');
-            const images = button.getAttribute('data-images');
-            
-            // Preload video if not already cached
-            if (link && link.trim().toLowerCase().endsWith('.mp4') && !videoCache.has(link)) {
-                const video = document.createElement('video');
-                video.src = link;
-                video.preload = 'metadata'; // Only preload metadata on hover
-                video.muted = true;
-                video.loop = true;
-                video.playsInline = true;
-                videoCache.set(link, video);
-            }
-            
-            // Preload first 2 images if not already cached
-            if (images && !imagePreloadCache.has(images)) {
-                const imageSources = images.split(',').map(s => s.trim()).filter(Boolean);
-                imageSources.slice(0, 2).forEach(src => {
-                    const img = new Image();
-                    img.src = src;
-                });
-                imagePreloadCache.add(images);
-            }
-        }, 300);
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        clearTimeout(hoverTimeout);
-    });
-});
 
 // ============= FORM HANDLING =============
 const dreamForm = document.querySelector('.dream-form');
