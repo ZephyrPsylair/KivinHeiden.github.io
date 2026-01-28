@@ -21,6 +21,11 @@
             <div class="nav-brand">
                 <span class="soul-glow">◈</span> KIVIN HEIDEN
             </div>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+                <span class="nav-toggle-bar"></span>
+            </button>
             <ul class="nav-links">
                 <li><a href="#about" data-section="about">JOURNAL</a></li>
                 <li><a href="#chronicle" data-section="chronicle">CHRONICLE</a></li>
@@ -33,11 +38,11 @@
     <!-- Hero Section - The Abyss -->
     <section id="hero" class="hero-abyss">  
         <div class="abyss-content">
-            <h1 style="font-size: 6rem;" class="hero-title soul-flicker">
+            <h1 class="hero-title soul-flicker">    
                 <span class="soul-text">Kivin Heiden</span>
                 <span class="title-shadow">Kivin Heiden</span>
             </h1>   
-            <p style="font-size: 25px;" class="hero-subtitle">Architect of Code & Worlds</p>
+            <p class="hero-subtitle">Architect of Code & Worlds</p>
             <p class="hero-quote">"Built in silence. Played in motion..."</p>
             <a href="#about" class="charm-button">
                 <span class="charm-inner">Descend</span>
@@ -345,6 +350,10 @@
                     <button class="preview-nav prev" aria-label="Previous screenshot">‹</button>
                     <div class="modal-frame">
                         <!-- Slides inserted by JS -->
+                        <div class="modal-loading">
+                            <div class="loading-spinner"></div>
+                            <p class="loading-text">Loading...</p>
+                        </div>
                     </div>
                     <button class="preview-nav next" aria-label="Next screenshot">›</button>
                     <div class="preview-dots"></div>

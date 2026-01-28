@@ -150,6 +150,30 @@ document.querySelectorAll('.journal-entry, .project-card, .timeline-item').forEa
 // ============= NAVIGATION HIGHLIGHT =============
 const sections = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-links a');
+const navToggleBtn = document.querySelector('.nav-toggle');
+const navContainer = document.querySelector('.nav-container');
+
+if (navToggleBtn && navContainer) {
+    navToggleBtn.addEventListener('click', () => {
+        navContainer.classList.toggle('nav-open');
+        const isOpen = navContainer.classList.contains('nav-open');
+        navToggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            navContainer.classList.remove('nav-open');
+            navToggleBtn.setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            navContainer.classList.remove('nav-open');
+            navToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+}
 
 function highlightNavigation() {
     const scrollY = window.pageYOffset;
@@ -210,6 +234,7 @@ const modalLink = document.querySelector('.modal-link');
 const modalClose = document.querySelector('.modal-close-btn');
 const modalOverlay = document.querySelector('.modal-overlay');
 const modalFrame = document.querySelector('.modal-frame');
+const modalLoading = document.querySelector('.modal-loading');
 const modalDotsContainer = document.querySelector('.preview-dots');
 const modalPrev = document.querySelector('.preview-nav.prev');
 const modalNext = document.querySelector('.preview-nav.next');
@@ -221,9 +246,25 @@ let currentSlide = 0;
 // Video cache for preloading
 const videoCache = new Map();
 
+function showLoadingScreen() {
+    if (modalLoading) {
+        modalLoading.classList.remove('hidden');
+    }
+}
+
+function hideLoadingScreen() {
+    if (modalLoading) {
+        modalLoading.classList.add('hidden');
+    }
+}
+
 function buildModalSlides(images, title, link) {
+    // Show loading screen while building slides
+    showLoadingScreen();
+    
     modalSlides = [];
     modalDots = [];
+
     currentSlide = 0;
 
     if (!modalFrame || !modalDotsContainer) return;
@@ -331,6 +372,11 @@ function buildModalSlides(images, title, link) {
     if (modalPrev) modalPrev.style.display = showNav ? 'flex' : 'none';
     if (modalNext) modalNext.style.display = showNav ? 'flex' : 'none';
     modalDotsContainer.style.display = showNav ? 'flex' : 'none';
+
+    // Hide loading screen after slides are built
+    setTimeout(() => {
+        hideLoadingScreen();
+    }, 300);
 }
 
 function setSlide(index) {
@@ -667,7 +713,10 @@ if (heroSubtitle) {
     }
     
     // Start rotation after 2 seconds initial delay 
-    setInterval(rotateText, 3000);
+    setTimeout(() => {
+        rotateText();
+        setInterval(rotateText, 3000);
+    }, 2000);
 }
 
 // ============= LOADING ANIMATION =============
