@@ -259,12 +259,8 @@ function hideLoadingScreen() {
 }
 
 function buildModalSlides(images, title, link) {
-    // Show loading screen while building slides
-    showLoadingScreen();
-    
     modalSlides = [];
     modalDots = [];
-
     currentSlide = 0;
 
     if (!modalFrame || !modalDotsContainer) return;
@@ -372,11 +368,6 @@ function buildModalSlides(images, title, link) {
     if (modalPrev) modalPrev.style.display = showNav ? 'flex' : 'none';
     if (modalNext) modalNext.style.display = showNav ? 'flex' : 'none';
     modalDotsContainer.style.display = showNav ? 'flex' : 'none';
-
-    // Hide loading screen after slides are built
-    setTimeout(() => {
-        hideLoadingScreen();
-    }, 300);
 }
 
 function setSlide(index) {
@@ -428,6 +419,9 @@ function nextSlide(step = 1) {
 function openProjectModal({ title, description, tags, link, repo }) {
     if (!modal) return;
 
+    // Show loading screen when opening modal
+    showLoadingScreen();
+
     modalTitle.textContent = title || 'Project';
     modalDesc.textContent = description || 'Details coming soon.';
 
@@ -469,6 +463,11 @@ function openProjectModal({ title, description, tags, link, repo }) {
         modal.classList.add('show');
         // ensure the current slide (usually 0) is activated and media plays
         setSlide(currentSlide || 0);
+        
+        // Hide loading screen after modal animation and content is ready
+        setTimeout(() => {
+            hideLoadingScreen();
+        }, 600);
     });
 }
 
