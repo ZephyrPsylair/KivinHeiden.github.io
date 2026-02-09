@@ -474,60 +474,78 @@ function openProjectModal({ title, description, tags, link, repo }) {
         const firstSlide = modalSlides[0];
         if (firstSlide) {
             const video = firstSlide.querySelector('video');
-            const image = firstSlide.querySelector('img');
+            const thumbnail = firstSlide.querySelector('.video-thumb');
             
             if (video) {
-                // For videos, wait for them to be ready to play
-                if (video.readyState >= 3) {
-                    // Video is already loaded, hide loading screen after animation
+                // For videos with thumbnails, wait for the VIDEO to be ready, not the thumbnail
+                // Use 'canplaythrough' which means video can play without buffering
+                const hideLoading = () => {
+                    setTimeout(() => {
+                        setSlide(currentSlide || 0);
+                        hideLoadingScreen();
+                    }, 300);
+                };
+                
+                // Check if video is already loaded enough to play through
+                if (video.readyState >= 4) {
+                    // HAVE_ENOUGH_DATA - video is ready
                     setTimeout(() => {
                         setSlide(currentSlide || 0);
                         hideLoadingScreen();
                     }, 600);
                 } else {
-                    // Wait for video to load
-                    const onReady = () => {
-                        setTimeout(() => {
-                            setSlide(currentSlide || 0);
-                            hideLoadingScreen();
-                        }, 300);
-                        video.removeEventListener('canplay', onReady);
+                    // Wait for video to be fully ready to play without stalling
+                    const onVideoReady = () => {
+                        hideLoading();
+                        video.removeEventListener('canplaythrough', onVideoReady);
                     };
-                    video.addEventListener('canplay', onReady);
+                    video.addEventListener('canplaythrough', onVideoReady, { once: true });
+                    
+                    // Also try 'loadeddata' as a backup
+                    const onLoadedData = () => {
+                        if (video.readyState >= 3) {
+                            hideLoading();
+                            video.removeEventListener('loadeddata', onLoadedData);
+                        }
+                    };
+                    video.addEventListener('loadeddata', onLoadedData, { once: true });
                     
                     // Fallback timeout in case video doesn't load
                     setTimeout(() => {
                         setSlide(currentSlide || 0);
                         hideLoadingScreen();
-                    }, 3000);
+                    }, 5000);
                 }
-            } else if (image) {
-                // For images, wait for them to load
-                if (image.complete) {
+            } else {
+                // For regular images (not video thumbnails), wait for them to load
+                const image = firstSlide.querySelector('img');
+                if (image && !image.classList.contains('video-thumb')) {
+                    if (image.complete) {
+                        setTimeout(() => {
+                            setSlide(currentSlide || 0);
+                            hideLoadingScreen();
+                        }, 600);
+                    } else {
+                        image.addEventListener('load', () => {
+                            setTimeout(() => {
+                                setSlide(currentSlide || 0);
+                                hideLoadingScreen();
+                            }, 300);
+                        }, { once: true });
+                        
+                        // Fallback timeout
+                        setTimeout(() => {
+                            setSlide(currentSlide || 0);
+                            hideLoadingScreen();
+                        }, 3000);
+                    }
+                } else {
+                    // No media or placeholder, just hide after animation
                     setTimeout(() => {
                         setSlide(currentSlide || 0);
                         hideLoadingScreen();
                     }, 600);
-                } else {
-                    image.addEventListener('load', () => {
-                        setTimeout(() => {
-                            setSlide(currentSlide || 0);
-                            hideLoadingScreen();
-                        }, 300);
-                    });
-                    
-                    // Fallback timeout
-                    setTimeout(() => {
-                        setSlide(currentSlide || 0);
-                        hideLoadingScreen();
-                    }, 3000);
                 }
-            } else {
-                // No media, just hide after animation
-                setTimeout(() => {
-                    setSlide(currentSlide || 0);
-                    hideLoadingScreen();
-                }, 600);
             }
         } else {
             // No slides, hide loading screen after animation
