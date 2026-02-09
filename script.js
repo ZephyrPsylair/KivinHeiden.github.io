@@ -388,6 +388,9 @@ function setSlide(index) {
         const vid = slide.querySelector('video');
         if (vid) {
             if (isActive) {
+                // Ensure video is muted during transitions
+                vid.muted = true;
+                
                 // show thumbnail briefly if available, then play
                 const thumb = slide.querySelector('.video-thumb');
                 if (thumb) {
@@ -397,19 +400,24 @@ function setSlide(index) {
                     if (slide._thumbTimeout) { clearTimeout(slide._thumbTimeout); slide._thumbTimeout = null; }
                     slide._thumbTimeout = setTimeout(() => {
                         try { thumb.style.opacity = '0'; } catch(e){}
+                        // Play video - it's already muted above
                         const p = vid.play();
                         if (p && typeof p.catch === 'function') p.catch(() => {});
                         slide._thumbTimeout = null;
                     }, 800);
                 } else {
-                    vid.muted = true;
                     const p = vid.play();
                     if (p && typeof p.catch === 'function') p.catch(() => {});
                 }
             } else {
                 // clear any pending thumbnail timeouts
                 try { if (slide._thumbTimeout) { clearTimeout(slide._thumbTimeout); slide._thumbTimeout = null; } } catch(e){}
-                try { vid.pause(); vid.currentTime = 0; } catch (e) {}
+                // Immediately pause and reset video
+                try { 
+                    vid.pause(); 
+                    vid.currentTime = 0;
+                    vid.muted = true;
+                } catch (e) {}
                 // hide thumb immediately if present
                 try { const thumb = slide.querySelector('.video-thumb'); if (thumb) thumb.style.opacity = '0'; } catch(e){}
             }
@@ -559,15 +567,21 @@ function openProjectModal({ title, description, tags, link, repo }) {
 function closeProjectModal() {
     if (!modal) return;
     
+    // IMMEDIATELY stop all playing videos - don't wait for animation
+    try {
+        modal.querySelectorAll('video').forEach(v => {
+            try { 
+                v.pause(); 
+                v.currentTime = 0;
+                v.muted = true;
+            } catch(e){}
+        });
+    } catch(e) {}
+    
     modal.classList.remove('show');
     
-    // Wait for animation to complete before hiding
+    // Wait for animation to complete before hiding modal from DOM
     setTimeout(() => {
-        // pause any playing videos
-        try {
-            modal.querySelectorAll('video').forEach(v => { try { v.pause(); v.currentTime = 0; } catch(e){} });
-        } catch(e) {}
-
         modal.classList.add('hidden');
         document.body.style.overflow = '';
     }, 300);

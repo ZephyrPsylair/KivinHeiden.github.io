@@ -1310,6 +1310,16 @@ section {
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
+.modal-image video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
 .modal-image .video-thumb {
     position: absolute;
     top: 0;
@@ -1317,10 +1327,17 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: 3;
+    z-index: 10;
     transition: opacity 0.45s ease;
     opacity: 1;
     pointer-events: none;
+    will-change: opacity;
+    /* Prevent any transform stacking issues */
+    backface-visibility: hidden;
+}
+
+.modal-image .video-thumb[style*="opacity: 0"] {
+    z-index: -1;
 }
 
 .modal-image.active {
