@@ -488,47 +488,61 @@ function openProjectModal({ title, description, tags, link, repo }) {
         const firstSlide = modalSlides[0];
         if (firstSlide) {
             const video = firstSlide.querySelector('video');
-            const thumbnail = firstSlide.querySelector('.video-thumb');
             
             if (video) {
-                // For videos with thumbnails, wait for the VIDEO to be ready, not the thumbnail
-                // Use 'canplaythrough' which means video can play without buffering
-                const hideLoading = () => {
+                // For videos, wait for actual video data to load, not thumbnails
+                let videoReady = false;
+                
+                // Check if video already has data
+                const checkVideoReady = () => {
+                    if (!videoReady && video.readyState >= 3) {
+                        videoReady = true;
+                        hideLoadingAndShowSlide();
+                    }
+                };
+                
+                const hideLoadingAndShowSlide = () => {
+                    if (!videoReady) return; // Safety check
+                    
                     setTimeout(() => {
                         setSlide(currentSlide || 0);
                         hideLoadingScreen();
-                    }, 300);
+                    }, 200);
+                    
+                    // Clean up all listeners
+                    video.removeEventListener('loadeddata', checkVideoReady);
+                    video.removeEventListener('progress', checkVideoReady);
+                    video.removeEventListener('canplay', checkVideoReady);
                 };
                 
-                // Check if video is already loaded enough to play through
-                if (video.readyState >= 4) {
-                    // HAVE_ENOUGH_DATA - video is ready
+                // If video already has enough data (cached/preloaded)
+                if (video.readyState >= 3) {
+                    videoReady = true;
                     setTimeout(() => {
                         setSlide(currentSlide || 0);
                         hideLoadingScreen();
                     }, 600);
                 } else {
-                    // Wait for video to be fully ready to play without stalling
-                    const onVideoReady = () => {
-                        hideLoading();
-                        video.removeEventListener('canplaythrough', onVideoReady);
-                    };
-                    video.addEventListener('canplaythrough', onVideoReady, { once: true });
+                    // Wait for video to load data
+                    // 'loadeddata' fires when the first frame is available
+                    video.addEventListener('loadeddata', checkVideoReady, { once: false });
                     
-                    // Also try 'loadeddata' as a backup
-                    const onLoadedData = () => {
-                        if (video.readyState >= 3) {
-                            hideLoading();
-                            video.removeEventListener('loadeddata', onLoadedData);
+                    // 'progress' event fires when browser is downloading, use as additional check
+                    video.addEventListener('progress', checkVideoReady, { once: false });
+                    
+                    // 'canplay' event fires when playback can begin
+                    video.addEventListener('canplay', checkVideoReady, { once: false });
+                    
+                    // More aggressive timeout - if video data hasn't loaded in 8 seconds, show it anyway
+                    const timeoutId = setTimeout(() => {
+                        if (!videoReady) {
+                            videoReady = true;
+                            hideLoadingAndShowSlide();
                         }
-                    };
-                    video.addEventListener('loadeddata', onLoadedData, { once: true });
+                    }, 8000);
                     
-                    // Fallback timeout in case video doesn't load
-                    setTimeout(() => {
-                        setSlide(currentSlide || 0);
-                        hideLoadingScreen();
-                    }, 5000);
+                    // Store timeout for cleanup
+                    video._loadingTimeout = timeoutId;
                 }
             } else {
                 // For regular images (not video thumbnails), wait for them to load
