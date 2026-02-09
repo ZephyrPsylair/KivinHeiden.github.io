@@ -265,8 +265,16 @@ function buildModalSlides(images, title, link) {
 
     if (!modalFrame || !modalDotsContainer) return;
 
+    // Preserve the loading screen element before clearing
+    const loadingScreen = modalFrame.querySelector('.modal-loading');
+    
     modalFrame.innerHTML = '';
     modalDotsContainer.innerHTML = '';
+    
+    // Re-append the loading screen so it can be shown during loading
+    if (loadingScreen) {
+        modalFrame.appendChild(loadingScreen);
+    }
 
     const sources = (images || '')
         .split(',')
@@ -419,9 +427,6 @@ function nextSlide(step = 1) {
 function openProjectModal({ title, description, tags, link, repo }) {
     if (!modal) return;
 
-    // Show loading screen when opening modal
-    showLoadingScreen();
-
     modalTitle.textContent = title || 'Project';
     modalDesc.textContent = description || 'Details coming soon.';
 
@@ -456,18 +461,80 @@ function openProjectModal({ title, description, tags, link, repo }) {
 
     document.body.style.overflow = 'hidden';
     
+    // Show loading screen before modal becomes visible
+    showLoadingScreen();
+    
     modal.classList.remove('hidden');
     
     // Trigger animation after display and ensure active slide (video) plays
     requestAnimationFrame(() => {
         modal.classList.add('show');
-        // ensure the current slide (usually 0) is activated and media plays
-        setSlide(currentSlide || 0);
         
-        // Hide loading screen after modal animation and content is ready
-        setTimeout(() => {
-            hideLoadingScreen();
-        }, 600);
+        // Wait for media to be ready before hiding loading screen
+        const firstSlide = modalSlides[0];
+        if (firstSlide) {
+            const video = firstSlide.querySelector('video');
+            const image = firstSlide.querySelector('img');
+            
+            if (video) {
+                // For videos, wait for them to be ready to play
+                if (video.readyState >= 3) {
+                    // Video is already loaded, hide loading screen after animation
+                    setTimeout(() => {
+                        setSlide(currentSlide || 0);
+                        hideLoadingScreen();
+                    }, 600);
+                } else {
+                    // Wait for video to load
+                    const onReady = () => {
+                        setTimeout(() => {
+                            setSlide(currentSlide || 0);
+                            hideLoadingScreen();
+                        }, 300);
+                        video.removeEventListener('canplay', onReady);
+                    };
+                    video.addEventListener('canplay', onReady);
+                    
+                    // Fallback timeout in case video doesn't load
+                    setTimeout(() => {
+                        setSlide(currentSlide || 0);
+                        hideLoadingScreen();
+                    }, 3000);
+                }
+            } else if (image) {
+                // For images, wait for them to load
+                if (image.complete) {
+                    setTimeout(() => {
+                        setSlide(currentSlide || 0);
+                        hideLoadingScreen();
+                    }, 600);
+                } else {
+                    image.addEventListener('load', () => {
+                        setTimeout(() => {
+                            setSlide(currentSlide || 0);
+                            hideLoadingScreen();
+                        }, 300);
+                    });
+                    
+                    // Fallback timeout
+                    setTimeout(() => {
+                        setSlide(currentSlide || 0);
+                        hideLoadingScreen();
+                    }, 3000);
+                }
+            } else {
+                // No media, just hide after animation
+                setTimeout(() => {
+                    setSlide(currentSlide || 0);
+                    hideLoadingScreen();
+                }, 600);
+            }
+        } else {
+            // No slides, hide loading screen after animation
+            setTimeout(() => {
+                hideLoadingScreen();
+            }, 600);
+        }
     });
 }
 
