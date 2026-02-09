@@ -388,7 +388,7 @@ function setSlide(index) {
         const vid = slide.querySelector('video');
         if (vid) {
             if (isActive) {
-                // Ensure video is muted during transitions
+                // Start muted during thumbnail transition, then unmute
                 vid.muted = true;
                 
                 // show thumbnail briefly if available, then play
@@ -400,12 +400,18 @@ function setSlide(index) {
                     if (slide._thumbTimeout) { clearTimeout(slide._thumbTimeout); slide._thumbTimeout = null; }
                     slide._thumbTimeout = setTimeout(() => {
                         try { thumb.style.opacity = '0'; } catch(e){}
-                        // Play video - it's already muted above
+                        // Play video and unmute it after thumbnail starts fading
                         const p = vid.play();
                         if (p && typeof p.catch === 'function') p.catch(() => {});
+                        // Unmute after a brief delay to ensure smooth transition
+                        setTimeout(() => {
+                            vid.muted = false;
+                        }, 200);
                         slide._thumbTimeout = null;
                     }, 800);
                 } else {
+                    // No thumbnail, unmute immediately and play
+                    vid.muted = false;
                     const p = vid.play();
                     if (p && typeof p.catch === 'function') p.catch(() => {});
                 }
