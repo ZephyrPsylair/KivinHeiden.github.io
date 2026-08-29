@@ -51,6 +51,7 @@
     [x-cloak]{display:none!important;}
     .photo-frame{position:relative;overflow:hidden;background:#e4e4e7;}
     .photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+    img[alt="Escape Blitz"]{object-fit:cover;object-position:center;}
 
     /* Reading progress */
     .progress-bar{position:fixed;top:0;left:0;height:3px;background:#FF6B2B;z-index:100;transition:width .1s linear;}
@@ -92,7 +93,8 @@
     /* Video player */
     .video-player{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;}
     .video-player video{width:100%;height:100%;display:block;object-fit:cover;}
-    .video-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:10;}
+    .video-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:10;}
+    .video-player.is-loading .video-loader{display:flex;}
     .loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,43,.2);border-top-color:#FF6B2B;border-radius:50%;animation:spin .8s linear infinite;}
     @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -105,7 +107,8 @@
     .carousel-nav:hover{background:#FF6B2B;}
     .carousel-prev{left:16px;}
     .carousel-next{right:16px;}
-    .carousel-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:15;}
+    .carousel-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:15;}
+    .carousel-container.is-loading .carousel-loader{display:flex;}
     .carousel-loader .loader-spinner{border-color:rgba(255,255,255,.2);border-top-color:#FF6B2B;}
   </style>
 </head>
@@ -177,7 +180,7 @@
 
       <!-- ═══ HERO IMAGE ═══ -->
       <div class="max-w-5xl mx-auto px-6 mb-16">
-        <div class="reveal photo-frame w-full h-72 md:h-[480px] rounded-3xl">
+        <div class="reveal photo-frame w-full aspect-[16/9] md:h-[480px] rounded-3xl overflow-hidden">
           <img src="Images/Projects/CoverImage/escape.jpg" alt="Escape Blitz" loading="eager"/>
         </div>
       </div>
@@ -274,23 +277,43 @@
       
       preloadImages() {
         const slides = this.carousel.querySelectorAll('.carousel-slide');
-        slides.forEach((slide, index) => {
-          const img = slide.querySelector('img');
-          if (img) {
-            img.onload = () => {
-              this.loadedImages++;
-              if (this.loadedImages === this.imageCount && this.loader) {
-                this.loader.style.display = 'none';
-                this.isLoading = false;
-              }
-            };
-            img.onerror = () => {
-              this.loadedImages++;
-              if (this.loadedImages === this.imageCount && this.loader) {
-                this.loader.style.display = 'none';
-              }
-            };
+        if (!slides.length && this.loader) {
+          this.loader.style.display = 'none';
+          this.carousel.classList.remove('is-loading');
+          return;
+        }
+
+        const markLoaded = () => {
+          this.loadedImages += 1;
+          const stillLoading = this.loadedImages < this.imageCount;
+          this.carousel.classList.toggle('is-loading', stillLoading);
+          if (this.loader) {
+            this.loader.style.display = stillLoading ? 'flex' : 'none';
           }
+          if (!stillLoading) {
+            this.isLoading = false;
+          }
+        };
+
+        this.carousel.classList.add('is-loading');
+        if (this.loader) {
+          this.loader.style.display = 'flex';
+        }
+
+        slides.forEach((slide) => {
+          const img = slide.querySelector('img');
+          if (!img) {
+            markLoaded();
+            return;
+          }
+
+          if (img.complete) {
+            markLoaded();
+            return;
+          }
+
+          img.addEventListener('load', markLoaded, { once: true });
+          img.addEventListener('error', markLoaded, { once: true });
         });
       }
       
