@@ -1,438 +1,484 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="app()" :class="{'dark':dark}" class="scroll-smooth">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kivin Heiden | Portfolio</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='60' font-size='125' fill='%2338bdf8' text-anchor='middle' dominant-baseline='middle'>◈</text></svg>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;600&family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>  
-    <!-- Particle Canvas Background -->
-    <canvas id="particles"></canvas>
-    
-    
-    <!-- Navigation - The Map -->
-    <nav class="nav-map">
-        <div class="nav-container">
-            <div class="nav-brand">
-                <span class="soul-glow">◈</span> KIVIN HEIDEN
-            </div>
-            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-                <span class="nav-toggle-bar"></span>
-                <span class="nav-toggle-bar"></span>
-                <span class="nav-toggle-bar"></span>
-            </button>
-            <ul class="nav-links">
-                <li><a href="#about" data-section="about">JOURNAL</a></li>
-                <li><a href="#chronicle" data-section="chronicle">CHRONICLE</a></li>
-                <li><a href="#projects" data-section="projects">CREATIONS</a></li>
-                <li><a href="#contact" data-section="contact">REACH OUT</a></li>
-            </ul>
-        </div>
-    </nav>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Eliott — Freelance UI/UX Designer and Frontend Developer. Fast, clean and accessible digital products.">
+<meta name="keywords" content="freelance developer, UI designer, portfolio, Tailwind CSS, Alpine.js">
+<meta name="author" content="Eliott">
+<meta property="og:title" content="Eliott — Freelance UI/UX Designer">
+<meta property="og:description" content="I design and build digital products that people love to use.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://eliott.dev">
+<title>Kivin Heiden - Game Programmer &amp; Unreal Developer</title>
 
-    <!-- Hero Section - The Abyss -->
-    <section id="hero" class="hero-abyss">  
-        <div class="abyss-content">
-            <h1 class="hero-title soul-flicker">        
-                <span class="soul-text">Kivin Heiden</span>
-                <span class="title-shadow">Kivin Heiden</span>
-            </h1>   
-            <p class="hero-subtitle">Architect of Code & Worlds</p>
-            <p class="hero-quote">"Built in silence. Played in motion..."</p>
-            <a href="#about" class="charm-button">
-                <span class="charm-inner">Descend</span>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+
+<script>
+tailwind.config = { 
+  darkMode: 'class',
+  theme: {
+    extend: {
+      fontFamily: { display: ['PT Sans','sans-serif'], body: ['DM Sans','sans-serif'] },
+      colors: { accent: '#FF6B2B', 'accent-light': '#FF8F5C' }
+    }
+  }
+}
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html,body{font-family:'DM Sans',sans-serif}
+h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif}
+body{transition:background-color .3s,color .3s}
+
+/* noise overlay */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#FF6B2B;border-radius:99px}
+
+/* reveal on scroll */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* nav underline animation */
+.nl{position:relative}
+.nl::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1.5px;background:currentColor;transition:width .22s cubic-bezier(.4,0,.2,1)}
+.nl:hover::after,.nl.on::after{width:100%}
+.nl.on{font-weight:500}
+
+/* shimmer button */
+.shimmer{position:relative;overflow:hidden}
+.shimmer::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.18);transform:skewX(-20deg);transition:left .4s cubic-bezier(.4,0,.2,1)}
+.shimmer:hover::after{left:160%}
+
+/* photo frames */
+.pf{overflow:hidden;background:#d4d4d8}
+.pf img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* card hover */
+.card-h{transition:transform .28s cubic-bezier(.4,0,.2,1),border-color .18s}
+.card-h:hover{transform:translateY(-4px)}
+
+/* experience timeline */
+.experience-section{background:#0b0b0d;color:#f4f4f5}
+.experience-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2.5rem}
+.experience-column{position:relative;padding-left:1.75rem}
+.experience-column::before{content:'';position:absolute;top:4.2rem;bottom:0;left:.35rem;width:1px;background:linear-gradient(to bottom,#52525b,rgba(63,63,70,.2))}
+.experience-heading{display:flex;align-items:center;gap:.75rem;padding-bottom:1.1rem;border-bottom:1px solid #27272a;margin-bottom:2.1rem}
+.experience-heading-mark{width:1.25rem;height:1.25rem;display:grid;place-items:center;color:#FF6B2B;font-size:1.05rem;line-height:1}
+.experience-card{position:relative;background:rgba(24,24,27,.72);border:1px solid #27272a;border-radius:.75rem;padding:1.35rem 1.35rem 1.45rem;margin-bottom:2.5rem;box-shadow:0 12px 30px rgba(0,0,0,.14)}
+.experience-card::before{content:'';position:absolute;top:1.05rem;left:-1.8rem;width:.8rem;height:.8rem;border-radius:50%;background:#FF6B2B;border:2px solid #0b0b0d;box-shadow:0 0 0 3px rgba(255,107,43,.16),0 0 14px rgba(255,107,43,.52)}
+.experience-card::after{content:'';position:absolute;top:1.05rem;left:-.65rem;border-width:.4rem .65rem .4rem 0;border-style:solid;border-color:transparent #27272a transparent transparent}
+.experience-date{color:#FF6B2B;font-size:.72rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase}
+.experience-card h4{color:#f4f4f5;font-size:1.18rem;line-height:1.35;margin:.8rem 0 .35rem}
+.experience-card .experience-org{color:#a1a1aa;font-size:.88rem;font-style:italic;margin-bottom:1rem}
+.experience-card p:last-child{color:#a1a1aa;font-size:.88rem;line-height:1.7;margin:0}
+@media (max-width:767px){.experience-grid{grid-template-columns:1fr;gap:1rem}.experience-column{padding-left:1.6rem}.experience-column::before{top:4.1rem}.experience-card::before{left:-1.65rem}.experience-card{margin-bottom:1.75rem}}
+
+/* skill tag */
+.stag{transition:border-color .18s}
+
+[x-cloak]{display:none!important}
+</style>
+</head>
+
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 antialiased">
+
+<!-- ═══ NAV ═══ -->
+<header class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+  :class="sc?'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm shadow-black/5':''">
+  <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
+
+    <a href="#hero" class="font-display font-bold text-xl tracking-tight relative z-10">
+      <span class="text-zinc-900 dark:text-white">Kivin</span><span class="text-accent"> Heiden</span>
+    </a>
+
+    <ul class="hidden md:flex md:ml-auto items-center gap-8 text-sm" role="list">
+      
+      <li><a href="#about"   class="nl text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" :class="s==='about'?'on !text-zinc-900 dark:!text-white':''">About</a></li>
+      <li><a href="#experience" class="nl text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" :class="s==='experience'?'on !text-zinc-900 dark:!text-white':''">Experience</a></li>
+      <li><a href="#work"     class="nl text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" :class="s==='work'?'on !text-zinc-900 dark:!text-white':''">Work</a></li>
+      <li><a href="#contact" class="nl text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors" :class="s==='contact'?'on !text-zinc-900 dark:!text-white':''">Contact</a></li>
+    </ul>
+
+    <div class="flex items-center gap-3">
+      <!-- hamburger -->
+      <button @click="mm=!mm" class="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800" :aria-expanded="mm" aria-label="Toggle menu">
+        <svg x-show="!mm" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg x-show="mm"  class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- mobile menu -->
+  <div x-show="mm" x-cloak
+    x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+    class="md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900">
+    <ul class="flex flex-col px-6 py-5 gap-4 text-sm font-medium" role="list">
+      
+      <li><a href="#about"   @click="mm=false" class="block text-zinc-700 dark:text-zinc-300 hover:text-accent transition-colors">About</a></li>
+      <li><a href="#experience" @click="mm=false" class="block text-zinc-700 dark:text-zinc-300 hover:text-accent transition-colors">Experience</a></li>
+      <li><a href="#work"     @click="mm=false" class="block text-zinc-700 dark:text-zinc-300 hover:text-accent transition-colors">Work</a></li>
+      <li><a href="#contact" @click="mm=false" class="block text-zinc-700 dark:text-zinc-300 hover:text-accent transition-colors">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero" class="relative min-h-screen flex items-center pt-16 overflow-hidden">
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+  <div class="absolute bottom-1/4 left-0 w-64 h-64 bg-zinc-200/50 dark:bg-zinc-800/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 py-24 w-full">
+    <div class="flex justify-center">
+
+      <div class="text-center">
+        <div class="text-center">
+        <h1 class="reveal d1 font-display font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-zinc-900 dark:text-white mb-6">
+          Hi, I'm <span class="text-accent">Kivin Heiden</span>
+        </h1>
+
+        <p class="reveal d2 text-lg md:text-xl text-zinc-500 dark:text-zinc-400 font-light leading-relaxed mb-5">
+          <strong class="font-medium text-zinc-700 dark:text-zinc-300">Game Programmer &amp; Unreal Developer</strong>.
+        </p>
+
+        <p class="reveal d2 text-lg md:text-xl text-zinc-500 dark:text-zinc-400 font-light leading-relaxed max-w-xl mx-auto mb-10">
+          I design and build immersive gameplay systems that feel responsive, polished, and fun to play.
+        </p>
+        <div class="reveal d3 flex flex-wrap justify-center gap-4">  
+          <a href="#about" class="shimmer inline-flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors text-sm">
+            About me
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about" class="py-24 bg-zinc-50 dark:bg-zinc-900/40">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16 items-center">
+
+      <div class="reveal order-2 md:order-1">
+        <div class="pf w-full aspect-square max-w-sm mx-auto rounded-3xl">
+          <img src="Images/Profile/profile-pic.jpg" alt="Eliott" loading="lazy">
+        </div>
+      </div>
+
+      <div class="order-1 md:order-2">
+        <p class="reveal text-xs font-medium text-accent tracking-widest uppercase mb-3">About me</p>
+        <h2 class="reveal d1 font-display font-bold text-4xl md:text-5xl text-zinc-900 dark:text-white leading-tight mb-6">A bit about<br>who I am</h2>
+        <p class="reveal d2 text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">
+         I'm a Game Programmer focused on building reliable, scalable gameplay systems that deliver responsive and engaging player experiences. I enjoy turning ideas into polished, playable mechanics through clean and maintainable code.
+        </p>
+        <p class="reveal d3 text-zinc-500 dark:text-zinc-400 leading-relaxed mb-5">
+          My work spans gameplay logic, AI, tools, and system design. I value clear solutions, iteration, and collaboration to build systems that are both fun to play and solid under the hood.
+        </p>
+        <div class="reveal d4"> 
+          <p class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-5">Skills &amp; tools</p>
+          <div class="flex flex-wrap gap-2" role="list" aria-label="Skills">
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Unreal Engine</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Blueprints</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">C++</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Git / GitHub</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Unity</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">C#</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Aseprite</span>
+            <span role="listitem" class="stag text-sm bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-3.5 py-1.5 rounded-full hover:border-accent">Multiplayer</span>
+          </div>
+          <div class="reveal d3 flex flex-wrap justify-center gap-4 mt-10 ">
+          <a href="Resume/Kivin Heiden - Gameplay Programmer.pdf" class="shimmer inline-flex items-center gap-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-medium px-7 py-3.5 rounded-full hover:bg-zinc-700 dark:hover:bg-zinc-200 transition-colors text-sm">
+            Download Resume
             </a>
         </div>
-        <div class="social-links">
-                    <a href="https://www.facebook.com/kivin.heiden/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="Facebook">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 2h-3a6 6 0 0 0-6 6v3H7v4h2v8h4v-8h3l1-4h-4V8a2 2 0 0 1 2-2h1z"></path>
-                        </svg>
-                    </a>
-                    <a href="https://www.instagram.com/zephyrpsylair/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="Instagram">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <circle cx="17.5" cy="6.5" r="1.5"></circle>
-                        </svg>
-                    </a>
-                    <a href="https://x.com/KivinHeiden" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="X">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2s9 5 20 5a9.5 9.5 0 0 0-9-5.5c4.75 2.25 7-7 7-7"></path>
-                        </svg>
-                    </a>
-                    <a href="https://github.com/ZephyrPsylair" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="GitHub">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.547 2.914 1.186.092-.923.35-1.548.636-1.905-2.22-.254-4.555-1.11-4.555-4.942 0-1.091.39-1.984 1.029-2.683-.103-.254-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.393.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.307.678.917.678 1.852 0 1.336-.012 2.415-.012 2.744 0 .267.18.578.688.48C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
-                        </svg>
-                    </a>
-                    <a href="https://www.linkedin.com/in/kivin-heiden/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="LinkedIn">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"></path>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                    </a>
-                </div>
-        <div class="abyss-silhouette"></div>
-    </section>
-
-    <!-- About Section - Hunter's Journal -->
-    <section id="about" class="journal-section">
-        <div class="section-container">
-            <h2 class="section-title">
-                <span class="title-icon">◆</span>
-                Programmer’s Journal
-                <span class="title-icon">◆</span>
-            </h2>
-            
-            <div class="journal-entry">
-                <article class="journal-panel left-panel">
-                    <div class="profile-frame">
-                        <div class="profile-image">
-                            <img src="images/profile-pic.jpg" alt="Portrait of Kivin Heiden">
-                        </div>
-                        <div class="frame-ornament"></div>
-                    </div>
-                </article>  
-                
-                <article class="journal-panel right-panel">
-                    <div class="journal-text">
-                        <p class="drop-cap">
-                            I am a game programmer focused on building reliable, scalable gameplay systems that prioritize player experience. My work centers on core mechanics, system design, and problem-solving—turning ideas into playable, responsive interactions through clean and maintainable code.
-                        </p>
-                        <p>
-                            I have experience working with gameplay logic, AI behavior, tools, and performance-aware systems. I value clarity, iteration, and collaboration, and I approach development with a strong understanding of how systems come together to create engaging and polished gameplay.
-                        </p>
-                    </div>
-                    
-                    <div class="skills-display">
-                        <h3 class="skills-title">Skills Collected</h3>
-                        <div class="soul-orbs">
-                            <div class="orb-item">
-                                <div class="orb filled"></div>
-                                <span>Unreal Engine</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb filled"></div>
-                                <span>Unity</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb filled"></div>
-                                <span>C++</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb filled"></div>
-                                <span>C#</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb partial"></div>
-                                <span>Git & GitHub</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb partial"></div>
-                                <span>OpenGL</span>
-                            </div>
-                            <div class="orb-item">
-                                <div class="orb partial"></div>
-                                <span>Blender</span>
-                            </div><div class="orb-item">
-                                <div class="orb partial"></div>
-                                <span>Aseprite</span>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                
-                <div class="journal-download-button">
-                    <a href="resume/KivinHeiden.pdf" target="_blank" rel="noopener noreferrer" class="charm-button">
-                        <span class="charm-inner">Download CV</span>
-                    </a>
-                </div>
-            </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Education & Experience Section - Chronicle of Trials -->
-    <section id="chronicle" class="chronicle-section">
-        <div class="section-container">
-            <h2 class="section-title">
-                <span class="title-icon">◆</span>
-                Developer’s Chronicle
-                <span class="title-icon">◆</span>
-            </h2>
-            
-            <div class="chronicle-grid">
-                <!-- Experience Timeline -->
-                <article class="chronicle-column">
-                    <h3 class="chronicle-header">
-                        <span class="header-symbol">⚔</span>
-                        Experience Forged
-                    </h3>
-                    
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">August 2025 - Present</div>
-                                <h4 class="timeline-title">Game Developer Intern</h4>
-                                <p class="timeline-location">Cyrus 365</p>
-                                <p class="timeline-desc">
-                                    Working as a Game Developer Intern at Cyrus 365, contributing to gameplay mechanics and core system implementation. Involved in multiplayer features, API-driven JSON workflows, and UI development using C++ widgets. Actively collaborating on ongoing features, debugging, and iteration within a production environment.
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div class="timeline-item">
-                            <div class="timeline-marker"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">March 2025 - July 2025</div>
-                                <h4 class="timeline-title">Gameplay Programmer Intern</h4>
-                                <p class="timeline-location">Arcanion</p>
-                                <p class="timeline-desc">
-                                    Worked on core gameplay systems using Unreal Engine Blueprints and C++. Collaborated with the team to prototype mechanics, refine player interactions, and debug features. Gained hands-on experience in a real-world game development pipeline.
-                                </p>
-                            </div>
-                        </div>
-                        
-                    </div>
-                </article>
-                
-                <!-- Education Timeline -->
-                <article class="chronicle-column">
-                    <h3 class="chronicle-header">
-                        <span class="header-symbol">✧</span>
-                        Academic Journey
-                    </h3>
-                    
-                    <div class="timeline">
-                        <div class="timeline-item">
-                            <div class="timeline-marker education"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">August 2023 - Present</div>
-                                <h4 class="timeline-title">Bachelor of Science in Game Programming</h4>
-                                <p class="timeline-location">ICAT College of Design & Media</p>
-                                <p class="timeline-desc">
-                                    Currently pursuing a B.Sc. in Game Programming at ICAT Media and Design College, where technical foundations are shaped through hands-on development. The program emphasizes building interactive gameplay systems and crafting experiences that feel responsive, engaging, and purposeful.
-                                </p>  
-                            </div>
-                        </div>
-                        
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section - Charms & Relics -->
-    <section id="projects" class="inventory-section">
-        <div class="section-container">
-            <h2 class="section-title">  
-                <span class="title-icon">◆</span>
-                Creations
-                <span class="title-icon">◆</span>
-            </h2>
-            
-            <div class="bench-menu">
-                
-                <div class="projects-grid">
-                    <article class="project-card" data-category="games">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-escape"></div>
-                            <h3 class="project-title">Escape Blitz</h3>
-                            <button class="view-project"
-                                data-title="Escape Blitz"
-                                data-description="A 2D multiplayer game developed in Unity. Communication is your greatest tool—coordinate with your team to overcome brutal, team-based challenges."
-                                data-tags="Unity 2D,C#,Photon"
-                                data-link="#"
-                                data-images="images/portfolio/escape/1.jpg, images/portfolio/escape/2.jpg, images/portfolio/escape/3.jpg"
-                                data-repo="https://github.com/ZephyrPsylair/Escape-Blitz"
-                            >View Project</button>
-                        </div>
-                    </article>
-                    
-                    <article class="project-card" data-category="design">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-tower"></div>
-                            <h3 class="project-title">Tower Fall</h3>
-                            <button class="view-project"
-                                data-title="Tower Fall"
-                                data-description="A fast, addictive spiral-drop game: guide a ball down a spiraling tower, dodge obstacles, and time precision drops to survive."
-                                data-tags="Unity 3D,C#"
-                                data-link="images/portfolio/tower/TowerFall-Gameplay.mp4"
-                                data-images="images/portfolio/tower/1.png, images/portfolio/tower/2.png, images/portfolio/tower/3.png, images/portfolio/tower/4.png, images/portfolio/tower/5.png, images/portfolio/tower/6.png, images/portfolio/tower/7.png"
-                                data-repo="https://github.com/ZephyrPsylair/Towel-Fall"
-                            >View Project</button>
-                        </div>
-                    </article>
-                    
-                    <article class="project-card" data-category="art">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-zenith"></div>
-                            <h3 class="project-title">Zenith</h3>
-                            <button class="view-project"
-                                data-title="Zenith"
-                                data-description="A fast-paced multiplayer shooter built in Unreal Engine 5. Combines C++ and Blueprints with Steam Online Subsystem and a unique comic-style cel-shading material for tactical, high-energy matches."
-                                data-tags="Unreal Engine, C++, Multiplayer"
-                                data-link="images/portfolio/zenith/Zenith-Gameplay.mp4"
-                                data-images="images/portfolio/zenith/1.png, images/portfolio/zenith/2.png, images/portfolio/zenith/3.png, images/portfolio/zenith/4.png, images/portfolio/zenith/5.png, images/portfolio/zenith/6.png"
-                                data-repo="https://github.com/ZephyrPsylair/Zenith"
-                            >View Project</button>
-                        </div>
-                    </article>
-                    
-                    <article class="project-card" data-category="games">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-rogue"></div>
-                            <h3 class="project-title">Rogue Rush</h3>
-                            <button class="view-project"
-                                data-title="Rogue Rush"
-                                data-description="An endless runner developed in Unreal Engine where reflexes meet strategy. Features dynamic obstacle systems, 3-lane movement, retargeted animations, handcrafted levels, and a custom curved shader for immersive visuals."
-                                data-tags="Unreal Engine, Blueprints"
-                                data-link="images/portfolio/rogue/RogueRush-Gameplay.mp4"
-                                data-images="images/portfolio/rogue/1.png, images/portfolio/rogue/2.png, images/portfolio/rogue/3.png, images/portfolio/rogue/4.png, images/portfolio/rogue/5.png, images/portfolio/rogue/6.png, images/portfolio/rogue/7.png, images/portfolio/rogue/8.png, images/portfolio/rogue/9.png, images/portfolio/rogue/10.png"
-                                data-repo="https://github.com/ZephyrPsylair/Rogue-Rush"
-                            >View Project</button>
-                        </div>
-                    </article>
-                    
-                    <article class="project-card" data-category="design">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-santa"></div>
-                            <h3 class="project-title">Santa's Journey</h3>  
-                            <button class="view-project"
-                                data-title="Santa's Journey"
-                                data-description="A festive, isometric puzzle-adventure developed in Unreal Engine. Deliver presents across illusion-based puzzles that shift paths and environments for a cozy holiday challenge."
-                                data-tags="Unreal Engine, Blueprints"
-                                data-link="images/portfolio/santa/SantasJourney-Gameplay.mp4"
-                                data-images="images/portfolio/santa/1.png, images/portfolio/santa/2.png, images/portfolio/santa/3.png, images/portfolio/santa/4.png, images/portfolio/santa/5.png, images/portfolio/santa/6.png, images/portfolio/santa/7.png, images/portfolio/santa/8.png, images/portfolio/santa/9.png, images/portfolio/santa/10.png, images/portfolio/santa/11.png, images/portfolio/santa/12.png, images/portfolio/santa/13.png, images/portfolio/santa/14.png, images/portfolio/santa/15.png, images/portfolio/santa/16.png, images/portfolio/santa/17.png, images/portfolio/santa/18.png, images/portfolio/santa/19.png, images/portfolio/santa/20.png, images/portfolio/santa/21.png, images/portfolio/santa/22.png"
-                                data-repo="https://github.com/ZephyrPsylair/Santas-Journey"
-                            >View Project</button>
-                        </div>
-                    </article>  
-                    
-                    <article class="project-card" data-category="art">
-                        <div class="card-glow"></div>
-                        <div class="card-content">
-                            <div class="project-preview preview-monster"></div>
-                            <h3 class="project-title">Monster Chef</h3>
-                            <button class="view-project"
-                                data-title="Monster Chef"
-                                data-description="A cozy cooking game developed in Unreal Engine where you play a friendly monster chef serving drive-thru burger orders—charming visuals and relaxing, addictive gameplay."
-                                data-tags="Unreal Engine, C++, Blueprints"
-                                data-link="images/portfolio/monster/MonsterChef-Gameplay.mp4"
-                                data-images="images/portfolio/monster/1.png, images/portfolio/monster/2.png, images/portfolio/monster/3.png, images/portfolio/monster/4.png, images/portfolio/monster/5.png, images/portfolio/monster/6.png, images/portfolio/monster/7.png, images/portfolio/monster/8.png, images/portfolio/monster/9.png, images/portfolio/monster/10.png, images/portfolio/monster/11.png, images/portfolio/monster/12.png, images/portfolio/monster/13.png, images/portfolio/monster/14.png, images/portfolio/monster/15.png"
-                                data-repo="https://github.com/ZephyrPsylair/Monster-Chef"
-                            >View Project</button>
-                        </div>
-                    </article>
-                </div>
-            </div>
-            
-        </div>
-    </section>
-
-    <!-- Project Modal -->
-    <div class="project-modal hidden" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
-        <div class="modal-overlay"></div>
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="modal-preview">
-                    <button class="preview-nav prev" aria-label="Previous screenshot">‹</button>
-                    <div class="modal-frame">
-                        <!-- Slides inserted by JS -->
-                        <div class="modal-loading hidden">
-                            <div class="loading-spinner"></div>
-                            <p class="loading-text">Loading...</p>
-                        </div>
-                    </div>
-                    <button class="preview-nav next" aria-label="Next screenshot">›</button>
-                    <div class="preview-dots"></div>
-                </div>
-                <h3 id="project-modal-title" class="modal-title">Project Title</h3>
-                <p class="modal-desc">Project description will appear here.</p>
-                <div class="modal-tags"></div>
-                <div class="modal-actions">
-                    <a class="modal-link" href="#" target="_blank" rel="noopener noreferrer">Open Project</a>
-                    <button type="button" class="modal-close-btn">Close</button>
-                </div>
-            </div>
-        </div>
+<!-- ═══ EXPERIENCE ═══ -->
+<section id="experience" class="experience-section py-24 relative overflow-hidden">
+  <div class="max-w-6xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-14">
+      <p class="reveal text-xs font-medium text-accent tracking-widest uppercase mb-3">Experience</p>
+      <h2 class="reveal d1 font-display font-bold text-4xl md:text-5xl text-white">Where I've worked & grown</h2>
     </div>
 
-    <!-- Contact Section - Whispering Root -->
-    <section id="contact" class="dream-section">
-        <div class="essence-particles"></div>
-        <div class="section-container">
-            <h2 class="section-title dream-title">
-                <span class="title-icon">◆</span>
-                Reach Out
-                <span class="title-icon">◆</span>
-            </h2>
-            
-            <div class="dream-content">
-                <p class="dream-quote">"Speak, and let your words drift through the dream..."</p>
-                
-                <div class="email-cta">
-                    <a href="mailto:samalexskh66@gmail.com" class="email-button" aria-label="Email Me" target="_blank" rel="noopener noreferrer">
-                        <svg class="email-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
-                            <polyline points="3,7 12,13 21,7"></polyline>
-                        </svg>
-                    </a>
-                    <p class="email-cta-text">Reach out via email</p>
-                    
-                </div>
-                
-                <div class="social-links">
-                    <a href="https://www.facebook.com/kivin.heiden/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="Facebook">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 2h-3a6 6 0 0 0-6 6v3H7v4h2v8h4v-8h3l1-4h-4V8a2 2 0 0 1 2-2h1z"></path>
-                        </svg>
-                    </a>
-                    <a href="https://www.instagram.com/zephyrpsylair/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="Instagram">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                            <circle cx="17.5" cy="6.5" r="1.5"></circle>
-                        </svg>
-                    </a>
-                    <a href="https://x.com/KivinHeiden" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="X">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2s9 5 20 5a9.5 9.5 0 0 0-9-5.5c4.75 2.25 7-7 7-7"></path>
-                        </svg>
-                    </a>
-                    <a href="https://github.com/ZephyrPsylair" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="GitHub">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.547 2.914 1.186.092-.923.35-1.548.636-1.905-2.22-.254-4.555-1.11-4.555-4.942 0-1.091.39-1.984 1.029-2.683-.103-.254-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.393.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.307.678.917.678 1.852 0 1.336-.012 2.415-.012 2.744 0 .267.18.578.688.48C19.137 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"></path>
-                        </svg>
-                    </a>
-                    <a href="https://www.linkedin.com/in/kivin-heiden/" target="_blank" rel="noopener noreferrer" class="social-charm" aria-label="LinkedIn">
-                        <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"></path>
-                            <circle cx="4" cy="4" r="2"></circle>
-                        </svg>
-                    </a>
-                </div>
-            </div>
+    <div class="experience-grid">
+      <div class="experience-column professional">
+        <div class="experience-heading reveal">
+          <h3 class="font-display font-bold text-2xl text-white">Professional Experience</h3>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="void-footer">
-        <p>© 2026 Kivin Heiden • All Rights Reserved</p>
-        <p class="footer-quote">"No cost too great..."</p>
-    </footer>
+        <article class="experience-card reveal d1">
+          <time class="experience-date" datetime="2026-03">March 2026 - August 2026</time>
+          <h4>Lead Gameplay Programmer</h4>
+          <p class="experience-org">WRKS Games</p>
+          <p>Leading gameplay development for Lord of Kensai, a UE5 city-builder using C++ and Blueprints. Working on core gameplay systems, modular architecture, UI, simulation, building placement, logistics, and data-driven workflows while improving stability and supporting the development team.</p>
+        </article>
 
-    <script src="script.js"></script>
+        <article class="experience-card reveal d2">
+          <time class="experience-date" datetime="2025-08">August 2025 - February 2026</time>
+          <h4>Game Developer Intern</h4>
+          <p class="experience-org">Cyrus 365</p>
+          <p>Contributing to gameplay mechanics and core system implementation. Working across multiplayer features, API-driven JSON workflows, and UI development with C++ while debugging and iterating inside a production environment.</p>
+        </article>
+
+        <article class="experience-card reveal d3">
+          <time class="experience-date" datetime="2025-03">March 2025 - July 2025</time>
+          <h4>Gameplay Programmer Intern</h4>
+          <p class="experience-org">Arcanion</p>
+          <p>Built and refined gameplay systems with Unreal Engine Blueprints and C++. Collaborated with the team to prototype mechanics, improve player interactions, and debug features in a real-world development pipeline.</p>
+        </article>
+      </div>
+
+      <div class="experience-column academic">
+        <div class="experience-heading reveal">
+          <h3 class="font-display font-bold text-2xl text-white">Academic Journey</h3>
+        </div>
+
+        <article class="experience-card reveal d1">
+          <time class="experience-date" datetime="2023-08">August 2023 - April 2026</time>
+          <h4>Bachelor of Science in Game Programming</h4>
+          <p class="experience-org">ICAT College of Design &amp; Media</p>
+          <p>Currently pursuing a B.Sc. in Game Programming, building a technical foundation through hands-on development. The program focuses on creating responsive gameplay systems and interactive experiences that feel engaging and purposeful.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ WORK ═══ -->
+<section id="work" class="py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-14">
+      <div>
+        <p class="reveal text-xs font-medium text-accent tracking-widest uppercase mb-3">Portfolio</p>
+        <h2 class="reveal d1 font-display font-bold text-4xl md:text-5xl text-zinc-900 dark:text-white mb-7">A look at what I've built</h2>
+
+    <div class="flex flex-col gap-6 md:flex-row">
+      <div class="contents md:flex md:w-1/2 md:flex-col md:gap-6">
+      <article class="order-1 card-h reveal d1 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-72">
+          <img src="Images/Projects/CoverImage/escape.jpg" alt="Escape Blitz" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unity 2D</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">C#</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">Multiplayer</span>
+          </div>
+          <a href="escape-blitz.html">
+            <h3 class="font-display font-bold text-2xl text-zinc-900 dark:text-white mb-2">Escape Blitz</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-5">A 2D multiplayer game developed in Unity. Communication is your greatest tool—coordinate with your team to overcome brutal, team-based challenges.</p>
+          <a href="escape-blitz.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+        </div>
+      </article>
+
+      <article class="order-3 card-h reveal d3 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-48">
+          <img src="Images/Projects/CoverImage/zenith.jpg" alt="Zenith" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unreal Engine</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">C++</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">Multiplayer</span>
+          </div>
+          <a href="zenith.html">
+            <h3 class="font-display font-bold text-xl text-zinc-900 dark:text-white mb-1.5">Zenith</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">A fast-paced multiplayer shooter built in Unreal Engine 5. Combines C++ and Blueprints with Steam Online Subsystem and a unique comic-style cel-shading material for tactical, high-energy matches.</p>
+          <a href="zenith.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+        </div>
+      </article>
+
+      <article class="order-5 card-h reveal d3 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-56">
+          <img src="Images/Projects/CoverImage/santa.png" alt="Santa's Journey" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unreal Engine</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">Blueprints</span>
+          </div>
+          <a href="santas-journey.html">
+            <h3 class="font-display font-bold text-xl text-zinc-900 dark:text-white mb-1.5">Santa's Journey</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">A festive, isometric puzzle-adventure developed in Unreal Engine. Deliver presents across illusion-based puzzles that shift paths and environments for a cozy holiday challenge.</p>
+          <a href="santas-journey.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+        </div>
+      </article>
+
+      </div>
+      <div class="contents md:flex md:w-1/2 md:flex-col md:gap-6">
+
+      <article class="order-2 card-h reveal d2 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-48">
+          <img src="Images/Projects/CoverImage/tower.png" alt="Tower Fall" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unity 3D</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">C#</span>
+          </div>
+          <a href="tower-fall.html">
+            <h3 class="font-display font-bold text-xl text-zinc-900 dark:text-white mb-1.5">Tower Fall</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">A fast, addictive spiral-drop game: guide a ball down a spiraling tower, dodge obstacles, and time precision drops to survive.</p>
+          <a href="tower-fall.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+        </div>
+      </article>
+
+      <article class="order-4 card-h reveal d3 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-56">
+          <img src="Images/Projects/CoverImage/rogue.jpg" alt="Rogue Rush" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unreal Engine</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">Blueprints</span>
+          </div>
+          <a href="rogue-rush.html">
+            <h3 class="font-display font-bold text-xl text-zinc-900 dark:text-white mb-1.5">Rogue Rush</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">An endless runner developed in Unreal Engine where reflexes meet strategy. Features dynamic obstacle systems, 3-lane movement, retargeted animations, handcrafted levels, and a custom curved shader for immersive visuals.</p>
+          <a href="rogue-rush.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>  
+        </div>
+      </article>
+
+      <article class="order-4 card-h reveal d3 group rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-accent">
+        <div class="pf w-full h-70">
+          <img src="Images/Projects/CoverImage/monster.jpg" alt="Monster Chef" loading="lazy">
+        </div>
+        <div class="p-6">
+          <div class="flex flex-wrap gap-2 mb-3">
+            <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-3 py-1 rounded-full">Unreal Engine</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">C++</span>
+            <span class="text-xs bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-3 py-1 rounded-full">Blueprints</span>
+
+          </div>
+          <a href="monster-chef.html">
+            <h3 class="font-display font-bold text-xl text-zinc-900 dark:text-white mb-1.5">Monster Chef</h3>
+          </a>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed mb-4">A cozy cooking game developed in Unreal Engine where you play a friendly monster chef serving drive-thru burger orders—charming visuals and relaxing, addictive gameplay.</p>
+          <a href="monster-chef.html" class="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-900 dark:text-white nl">View Project<svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>  
+        </div>
+      </article>
+
+      </div>
+    </div>
+  </div>
+</section>  
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" class="py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="bg-zinc-900 dark:bg-zinc-800 rounded-3xl p-10 md:p-16 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
+      <div class="absolute bottom-0 left-0 w-40 h-40 bg-accent/10 rounded-full blur-2xl pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative z-10 flex justify-center">
+
+        <div class="max-w-3xl w-full text-center">
+          <p class="reveal text-xs font-medium text-accent tracking-widest uppercase mb-3">Get in touch</p>
+          <h2 class="reveal d1 font-display font-bold text-4xl md:text-5xl text-white leading-tight mb-5">Let's work<br>together</h2>
+          <p class="reveal d2 text-zinc-400 leading-relaxed mb-8 max-w-2xl mx-auto">I’m open to game programming opportunities, freelance projects, and long-term collaborations. Gameplay systems, multiplayer, or bringing a new idea to life — let’s talk.</p>
+
+          <div class="reveal d3 flex flex-col items-center gap-4 w-full max-w-xl mx-auto">
+            <a href="mailto:samalexskh66@gmail.com" class="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
+              <span class="w-9 h-9 flex items-center justify-center bg-zinc-800 rounded-lg group-hover:bg-accent/20 transition-colors shrink-0">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              </span>
+              <span class="text-sm">samalexskh66@gmail.com</span>
+            </a>
+            <a href="https://www.linkedin.com/in/kivin-heiden" rel="noopener noreferrer" target="_blank" class="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
+              <span class="w-9 h-9 flex items-center justify-center bg-zinc-800 rounded-lg group-hover:bg-accent/20 transition-colors shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              </span>
+              <span class="text-sm">linkedin.com/in/kivin-heiden</span>
+            </a>
+            <a href="https://github.com/ZephyrPsylair" rel="noopener noreferrer" target="_blank" class="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors">
+              <span class="w-9 h-9 flex items-center justify-center bg-zinc-800 rounded-lg group-hover:bg-accent/20 transition-colors shrink-0">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              </span>
+              <span class="text-sm">github.com/ZephyrPsylair</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="border-t border-zinc-100 dark:border-zinc-900">
+  <div class="max-w-6xl mx-auto px-6 py-8 text-center">
+    <p class="text-sm text-zinc-400">© <span id="yr"></span> Kivin Heiden. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+function app() {
+  return {
+    dark: false,
+    mm: false,
+    sc: false,
+    s: 'hero',
+
+    init() {
+      // dark mode
+      this.dark = localStorage.getItem('theme') === 'dark' ||
+        (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      this.$watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+
+      // scroll
+      window.addEventListener('scroll', () => {
+        this.sc = window.scrollY > 20;
+        this.updateSection();
+      }, { passive: true });
+
+      // reveal
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+      // year
+      document.getElementById('yr').textContent = new Date().getFullYear();
+    },
+
+    updateSection() {
+      const atBottom = (window.innerHeight + window.scrollY) >= document.body.scrollHeight - 60;
+      if (atBottom) { this.s = 'contact'; return; }
+      const ids = ['contact','work','experience','about','hero'];
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 130) { this.s = id; return; }
+      }
+    }
+  }
+}
+</script>
+
 </body>
 </html>

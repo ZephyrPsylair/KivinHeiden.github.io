@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{
+  dark: localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches),
+  scrolled: false,
+  mobileMenu: false,
+  progress: 0
+}" :class="{'dark':dark}" x-init="
+  $watch('dark', v => localStorage.setItem('theme', v ? 'dark' : 'light'));
+  window.addEventListener('scroll', () => {
+    scrolled = window.scrollY > 20;
+    progress = Math.min(100, Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100));
+  }, { passive: true });
+" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Escape Blitz — A 2D multiplayer game case study by Kivin Heiden."/>
+  <meta name="author" content="Kivin Heiden"/>
+  <meta property="og:title" content="Escape Blitz · Case Study by Kivin Heiden"/>
+  <meta property="og:type" content="article"/>
+  <title>Escape Blitz · Kivin Heiden</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { display: ['PT Sans','sans-serif'], body: ['DM Sans','sans-serif'] },
+          colors: { accent: '#FF6B2B', 'accent-light': '#FF8F5C' }
+        }
+      }
+    }
+  </script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;}
+    html{font-family:'DM Sans',sans-serif;}
+    h1,h2,h3,h4,h5,h6{font-family:'PT Sans',sans-serif;}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#FF6B2B;border-radius:99px;}
+    body{transition:background-color .3s,color .3s;}
+    body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4;}
+    .nav-link{position:relative;}
+    .nav-link::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1.5px;background:currentColor;transition:width .25s cubic-bezier(.4,0,.2,1);}
+    .nav-link:hover::after{width:100%;}
+    .btn-primary{position:relative;overflow:hidden;}
+    .btn-primary::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:rgba(255,255,255,.18);transform:skewX(-20deg);transition:left .4s cubic-bezier(.4,0,.2,1);}
+    .btn-primary:hover::after{left:160%;}
+    [x-cloak]{display:none!important;}
+    .photo-frame{position:relative;overflow:hidden;background:#e4e4e7;}
+    .photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+
+    /* Reading progress */
+    .progress-bar{position:fixed;top:0;left:0;height:3px;background:#FF6B2B;z-index:100;transition:width .1s linear;}
+
+    /* Reveal */
+    .reveal{opacity:0;transform:translateY(22px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}
+
+    /* Case study prose */
+    .prose-cs h2{font-family:'PT Sans',sans-serif;font-size:1.55rem;font-weight:700;margin:2.75rem 0 1rem;line-height:1.25;}
+    .prose-cs h3{font-family:'PT Sans',sans-serif;font-size:1.15rem;font-weight:700;margin:2rem 0 .6rem;line-height:1.3;color:#FF6B2B;}
+    .prose-cs p{margin:0 0 1.4rem;line-height:1.82;color:#52525b;}
+    .dark .prose-cs p{color:#a1a1aa;}
+    .prose-cs ul{margin:0 0 1.4rem 1.5rem;list-style:disc;}
+    .prose-cs li{margin-bottom:.45rem;line-height:1.7;color:#52525b;}
+    .dark .prose-cs li{color:#a1a1aa;}
+    .prose-cs blockquote{border-left:3px solid #FF6B2B;padding:.75rem 1.25rem;margin:0 0 1.8rem;background:#fff7f4;border-radius:0 8px 8px 0;}
+    .dark .prose-cs blockquote{background:#27272a;}
+    .prose-cs blockquote p{color:#52525b;font-style:italic;margin:0;}
+    .dark .prose-cs blockquote p{color:#a1a1aa;}
+    .prose-cs hr{border:none;border-top:1px solid #e4e4e7;margin:2.5rem 0;}
+    .dark .prose-cs hr{border-top-color:#27272a;}
+    .prose-cs a{color:#FF6B2B;text-decoration:underline;text-underline-offset:3px;}
+
+    /* Stat card */
+    .stat-card{border-left:3px solid #FF6B2B;}
+
+    /* Image caption */
+    .img-caption{font-size:.8rem;color:#a1a1aa;text-align:center;margin-top:.6rem;}
+
+    /* Step badge */
+    .step-badge{width:2rem;height:2rem;min-width:2rem;border-radius:50%;background:#FF6B2B;color:#fff;font-family:'PT Sans',sans-serif;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;}
+
+    /* card hover */
+    .card-h{transition:transform .28s cubic-bezier(.4,0,.2,1),border-color .18s;}
+    .card-h:hover{transform:translateY(-4px);}
+
+    /* Video player */
+    .video-player{position:relative;overflow:hidden;background:#000;aspect-ratio:16/9;}
+    .video-player video{width:100%;height:100%;display:block;object-fit:cover;}
+    .video-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:10;}
+    .loader-spinner{width:50px;height:50px;border:4px solid rgba(255,107,43,.2);border-top-color:#FF6B2B;border-radius:50%;animation:spin .8s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* Image carousel */
+    .carousel-container{position:relative;overflow:hidden;background:#e4e4e7;aspect-ratio:16/9;}
+    .carousel-slide{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;transition:opacity .4s ease-in-out;}
+    .carousel-slide.active{opacity:1;position:relative;}
+    .carousel-slide img{width:100%;height:100%;object-fit:cover;display:block;}
+    .carousel-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:20;cursor:pointer;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,107,43,.9);color:#fff;border:none;border-radius:8px;transition:background .2s;font-size:20px;}
+    .carousel-nav:hover{background:#FF6B2B;}
+    .carousel-prev{left:16px;}
+    .carousel-next{right:16px;}
+    .carousel-loader{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;z-index:15;}
+    .carousel-loader .loader-spinner{border-color:rgba(255,255,255,.2);border-top-color:#FF6B2B;}
+  </style>
+</head>
+<body class="bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-body antialiased">
+
+  <!-- Reading progress bar -->
+  <div class="progress-bar" :style="`width:${progress}%`" role="progressbar" :aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100" aria-label="Reading progress"></div>
+
+  <!-- ═══ NAV ═══ -->
+  <header class="fixed inset-x-0 top-0 z-50 transition-all duration-300"
+    :class="scrolled ? 'bg-white/90 dark:bg-zinc-950/90 backdrop-blur-md shadow-sm shadow-black/5' : ''">
+    <nav class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Main navigation">
+      <a href="index.html#hero" class="font-display font-bold text-xl tracking-tight relative z-10">
+        <span class="text-zinc-900 dark:text-white">Kivin</span><span class="text-accent"> Heiden</span>
+      </a>
+      <ul class="hidden md:flex md:ml-auto items-center gap-8 text-sm" role="list">
+        <li><a href="index.html#about" class="nav-link text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">About</a></li>
+        <li><a href="index.html#experience" class="nav-link text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Experience</a></li>
+        <li><a href="index.html#work" class="nav-link text-accent font-medium">Work</a></li>
+        <li><a href="index.html#contact" class="nav-link text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">Contact</a></li>
+      </ul>
+      <div class="flex items-center gap-3">
+        <button @click="mobileMenu=!mobileMenu" class="md:hidden w-9 h-9 flex items-center justify-center rounded-full border border-zinc-200 dark:border-zinc-800" :aria-expanded="mobileMenu" aria-label="Toggle menu">
+          <svg x-show="!mobileMenu" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg x-show="mobileMenu" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div x-show="mobileMenu" x-cloak
+      x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+      class="md:hidden bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-900">
+      <ul class="flex flex-col px-6 py-5 gap-4 text-sm font-medium" role="list">
+        <li><a href="index.html#about" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">About</a></li>
+        <li><a href="index.html#experience" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Experience</a></li>
+        <li><a href="index.html#work" @click="mobileMenu=false" class="block text-accent font-medium">Work</a></li>
+        <li><a href="index.html#contact" @click="mobileMenu=false" class="block text-zinc-700 dark:text-zinc-300">Contact</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══ CASE STUDY HEADER ═══ -->
+    <article>
+      <header class="pt-32 pb-10 max-w-4xl mx-auto px-6">
+
+        <!-- Back link -->
+        <a href="index.html#work" class="inline-flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 hover:text-accent transition-colors mb-8">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h18"/></svg>
+          Back to projects
+        </a>
+
+        <!-- Tags only -->
+        <div class="flex flex-wrap items-center gap-3 mb-6">
+          <span class="text-xs bg-orange-50 dark:bg-zinc-800 text-accent border border-orange-200 dark:border-zinc-700 px-2.5 py-1 rounded-full">Unity 2D</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">C#</span>
+          <span class="text-xs bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 px-2.5 py-1 rounded-full">Multiplayer</span>
+        </div>
+
+        <h1 class="reveal font-display font-bold text-4xl md:text-5xl lg:text-6xl text-zinc-900 dark:text-white leading-tight mb-6">
+          Escape Blitz
+        </h1>
+
+        <p class="reveal d1 text-xl text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10 max-w-2xl">
+          A 2D multiplayer game developed in Unity. Communication is your greatest tool—coordinate with your team to overcome brutal, team-based challenges.
+        </p>
+      </header>
+
+      <!-- ═══ HERO IMAGE ═══ -->
+      <div class="max-w-5xl mx-auto px-6 mb-16">
+        <div class="reveal photo-frame w-full h-72 md:h-[480px] rounded-3xl">
+          <img src="Images/Projects/CoverImage/escape.jpg" alt="Escape Blitz" loading="eager"/>
+        </div>
+      </div>
+
+      <!-- ═══ ARTICLE BODY ═══ -->
+      <div class="max-w-3xl mx-auto px-6 pb-4 prose-cs">
+
+        <h2>The brief</h2>
+        <p>Escape Blitz is a 2D multiplayer game built around teamwork, communication, and chaotic team-based challenges. Players must coordinate with their teammates and work together to overcome obstacles and complete each challenge.</p>
+
+        <h2>Core gameplay</h2>
+        <h3>Team coordination</h3>
+        <p>Communication plays a central role as players need to coordinate their actions and work together to overcome each challenge.</p>
+
+        <h3>Character interaction</h3>
+        <p>Players interact with the game world and each other while working toward solving the challenges presented in each level.</p>
+
+      </div>
+
+      <!-- Full-width image carousel -->
+      <div class="max-w-5xl mx-auto px-6 mb-16">
+        <div class="reveal w-full rounded-3xl carousel-container" id="media-carousel">
+          <div class="carousel-loader">
+            <div class="loader-spinner"></div>
+          </div>
+          <div class="carousel-slide active"><img src="Media/escape/1.jpg" alt="Escape Blitz gameplay 1" loading="lazy"/></div>
+          <div class="carousel-slide"><img src="Media/escape/2.jpg" alt="Escape Blitz gameplay 2" loading="lazy"/></div>
+          <div class="carousel-slide"><img src="Media/escape/3.jpg" alt="Escape Blitz gameplay 3" loading="lazy"/></div>
+          <button class="carousel-nav carousel-prev" aria-label="Previous image">&#8249;</button>
+          <button class="carousel-nav carousel-next" aria-label="Next image">&#8250;</button>
+        </div>
+        <p class="img-caption">Escape Blitz in-game action showing multiplayer coordination.</p>
+      </div>
+
+      <div class="max-w-3xl mx-auto px-6 pb-16 prose-cs">
+
+        <h2>Systems & Technical Highlights</h2>
+        <h3>Multiplayer gameplay</h3>
+        <p>Implemented multiplayer functionality using Photon to synchronize player actions and interactions across connected players.</p>
+
+        <h3>Player interaction</h3>
+        <p>Built the gameplay interactions required for players to communicate with and affect the game world.</p>
+
+        <h2>Tech stack</h2>
+        <p>Unity 2D · C# · Multiplayer · Photon</p>
+        <div class="mt-6 flex justify-center">
+          <a href="https://github.com/ZephyrPsylair/Escape-Blitz" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full bg-white text-zinc-900 font-semibold px-6 py-3 shadow-sm hover:bg-zinc-100 transition-colors min-w-[180px]">
+            GitHub
+          </a>
+        </div>
+
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="border-t border-zinc-100 dark:border-zinc-900">
+    <div class="max-w-6xl mx-auto px-6 py-8 text-center">
+      <p class="text-sm text-zinc-400">© <span id="yr"></span> Kivin Heiden. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+      });
+    }, { threshold: .08, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // Carousel functionality
+    class ImageCarousel {
+      constructor(carouselId, imageCount) {
+        this.carousel = document.getElementById(carouselId);
+        this.imageCount = imageCount;
+        this.currentIndex = 0;
+        this.isLoading = true;
+        this.loadedImages = 0;
+        
+        if (!this.carousel) return;
+        
+        this.prevBtn = this.carousel.querySelector('.carousel-prev');
+        this.nextBtn = this.carousel.querySelector('.carousel-next');
+        this.loader = this.carousel.querySelector('.carousel-loader');
+        
+        this.prevBtn?.addEventListener('click', () => this.prev());
+        this.nextBtn?.addEventListener('click', () => this.next());
+        
+        this.preloadImages();
+      }
+      
+      preloadImages() {
+        const slides = this.carousel.querySelectorAll('.carousel-slide');
+        slides.forEach((slide, index) => {
+          const img = slide.querySelector('img');
+          if (img) {
+            img.onload = () => {
+              this.loadedImages++;
+              if (this.loadedImages === this.imageCount && this.loader) {
+                this.loader.style.display = 'none';
+                this.isLoading = false;
+              }
+            };
+            img.onerror = () => {
+              this.loadedImages++;
+              if (this.loadedImages === this.imageCount && this.loader) {
+                this.loader.style.display = 'none';
+              }
+            };
+          }
+        });
+      }
+      
+      showSlide(index) {
+        const slides = this.carousel.querySelectorAll('.carousel-slide');
+        slides.forEach(slide => slide.classList.remove('active'));
+        slides[index]?.classList.add('active');
+      }
+      
+      next() {
+        this.currentIndex = (this.currentIndex + 1) % this.imageCount;
+        this.showSlide(this.currentIndex);
+      }
+      
+      prev() {
+        this.currentIndex = (this.currentIndex - 1 + this.imageCount) % this.imageCount;
+        this.showSlide(this.currentIndex);
+      }
+    }
+
+    // Initialize carousel when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const carouselElement = document.getElementById('media-carousel');
+      if (carouselElement) {
+        const imageCount = carouselElement.querySelectorAll('.carousel-slide').length;
+        new ImageCarousel('media-carousel', imageCount);
+      }
+    });
+  </script>
+
+</body>
+</html>
